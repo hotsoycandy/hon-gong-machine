@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+from utils import draw_fruits
 
 fruits = np.load('./fruits_300.npy')
 fruits_2d = fruits.reshape(-1, 100 * 100)
@@ -10,19 +11,6 @@ kmeans = KMeans(n_clusters = 3, random_state = 42)
 kmeans.fit(fruits_2d)
 print("k means 라벨:", kmeans.labels_)
 print("각 라벨 별 분류된 샘플 개수", np.unique(kmeans.labels_, return_counts = True))
-
-def draw_fruits (fruits):
-    """
-    Draw fruits
-    """
-    fig, axs = plt.subplots((len(fruits) // 30) + 1, 30, squeeze = False)
-    for i, fruit in enumerate(fruits):
-        fruit = fruit.reshape(100, 100)
-        print(i, (len(fruits) // 30) + 1, 30)
-        axs[i // 30][i % 30].imshow(fruit)
-        axs[i // 30][i % 30].axis('off')
-    plt.show()
-    plt.close('all')
 
 draw_fruits(fruits[kmeans.labels_ == 0])
 draw_fruits(fruits[kmeans.labels_ == 1])
