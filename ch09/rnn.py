@@ -85,7 +85,7 @@ def build_model1():
     plt.legend(['train loss', 'validation loss'])
     plt.show()
 
-# build_model1()
+build_model1()
 
 def build_model2():
     """
