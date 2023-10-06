@@ -48,36 +48,80 @@ train_oh = keras.utils.to_categorical(train_seq)
 val_oh = keras.utils.to_categorical(val_seq)
 test_oh = keras.utils.to_categorical(test_seq)
 
-# build model
-model = keras.Sequential()
-model.add(keras.layers.SimpleRNN(8, input_shape = (100, 500)))
-model.add(keras.layers.Dense(1, activation = 'sigmoid'))
-print("model summary:", model.summary(0))
+def build_model1():
+    """
+    Build RNN model with one-hot-encoding
+    """
+    model = keras.Sequential()
+    model.add(keras.layers.SimpleRNN(8, input_shape = (100, 500)))
+    model.add(keras.layers.Dense(1, activation = 'sigmoid'))
+    print("model summary:", model.summary(0))
 
-# fit model
-rmsprop = keras.optimizers.RMSprop(learning_rate = 0.0001)
-model.compile(
-    optimizer = rmsprop,
-    loss = 'binary_crossentropy',
-    metrics = ['accuracy'])
-checkpoint_cb = keras.callbacks.ModelCheckpoint(
-    'best-simplernn-model.h5',
-    save_best_only = True)
-early_stopping_cb = keras.callbacks.EarlyStopping(
-    patience = 3,
-    restore_best_weights = True)
-history = model.fit(
-    train_oh,
-    train_target,
-    epochs = 100,
-    batch_size = 64,
-    validation_data = (val_oh, val_target),
-    callbacks = [checkpoint_cb, early_stopping_cb])
+    # fit model
+    rmsprop = keras.optimizers.RMSprop(learning_rate = 0.0001)
+    model.compile(
+        optimizer = rmsprop,
+        loss = 'binary_crossentropy',
+        metrics = ['accuracy'])
+    checkpoint_cb = keras.callbacks.ModelCheckpoint(
+        'best-simplernn-model.h5',
+        save_best_only = True)
+    early_stopping_cb = keras.callbacks.EarlyStopping(
+        patience = 3,
+        restore_best_weights = True)
+    history = model.fit(
+        train_oh,
+        train_target,
+        epochs = 100,
+        batch_size = 64,
+        validation_data = (val_oh, val_target),
+        callbacks = [checkpoint_cb, early_stopping_cb])
 
-# print loss of the training result
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.xlabel('epoch')
-plt.ylabel('loss')
-plt.legend(['train loss', 'validation loss'])
-plt.show()
+    # print loss of the training result
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.legend(['train loss', 'validation loss'])
+    plt.show()
+
+# build_model1()
+
+def build_model2():
+    """
+    Build RNN model with word embedding
+    """
+    model2 = keras.Sequential()
+    model2.add(keras.layers.Embedding(500, 16, input_length = 100))
+    model2.add(keras.layers.SimpleRNN(8))
+    model2.add(keras.layers.Dense(1, activation = 'sigmoid'))
+    print(model2.summary())
+
+    rmsprop = keras.optimizers.RMSprop(learning_rate = 0.0001)
+    model2.compile(
+        optimizer = rmsprop,
+        loss = 'binary_crossentropy',
+        metrics = ['accuracy'])
+    checkpoint_cb = keras.callbacks.ModelCheckpoint(
+        'best-simplernn-model2.h5',
+        save_best_only = True)
+    early_stopping_cb = keras.callbacks.EarlyStopping(
+        patience = 3,
+        restore_best_weights = True)
+    history = model2.fit(
+        train_seq,
+        train_target,
+        epochs = 100,
+        batch_size = 64,
+        validation_data = (val_seq, val_target),
+        callbacks = [checkpoint_cb, early_stopping_cb])
+
+    # print loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.legend(['train logg', 'validation loss'])
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.show()
+
+build_model2()
